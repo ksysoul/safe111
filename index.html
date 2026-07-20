@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>여름방학 안전교육 프로그램</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; background: #f9f9f9; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .stage-box { border: 2px solid #eee; padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        button { padding: 12px 25px; margin: 5px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold; }
+        .slogan-row { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 40px; border-radius: 20px; text-align: center; width: 60%; }
+        #slogan-container { width: 600px; height: 400px; position: relative; margin: auto; background-size: cover; background-position: center; border: 1px solid #ccc; }
+        .text-overlay { position: absolute; width: 90%; left: 5%; font-size: 35px; font-weight: bold; color: white; text-shadow: 3px 3px 6px black; white-space: pre-wrap; word-break: break-all; }
+        input[type="text"] { padding: 10px; font-size: 18px; width: 80%; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏖️ 여름방학 안전 교육 프로그램</h1>
+    <div id="stages"></div>
+    <div class="stage-box">
+        <h3>4단계: 나만의 안전 표어 만들기</h3>
+        <div class="slogan-row">
+            <button onclick="openSloganModal()">🎨 시작하기</button>
+            <span style="color: #555; font-size: 0.95em;">
+                예시: 부주의한 순간방심 돌아오는 평생후회
+            </span>
+        </div>
+    </div>
+</div>
+
+<div id="quiz-modal" class="modal"><div id="quiz-content" class="modal-content"></div></div>
+
+<div id="slogan-modal" class="modal" style="flex-direction:column;">
+    <div class="modal-content">
+        <div id="bg-select">
+            <h2>배경 선택</h2>
+            <img src="1.jpg" onclick="setBg('1.jpg')" style="width:150px; cursor:pointer;">
+            <img src="2.jpg" onclick="setBg('2.jpg')" style="width:150px; cursor:pointer;">
+            <img src="3.jpg" onclick="setBg('3.jpg')" style="width:150px; cursor:pointer;">
+        </div>
+        <div id="write-area" style="display:none;">
+            <div id="slogan-container"><div id="slogan-display" class="text-overlay" style="top: 40%;"></div></div>
+            <textarea id="slogan-input" oninput="document.getElementById('slogan-display').innerText=this.value" style="width:90%; height:80px; margin:20px 0; font-size:18px;"></textarea>
+            <br>
+            <button onclick="document.getElementById('slogan-display').style.top='10%'">위</button>
+            <button onclick="document.getElementById('slogan-display').style.top='40%'">중앙</button>
+            <button onclick="document.getElementById('slogan-display').style.top='70%'">아래</button>
+            <button onclick="convertToImage()" style="background:#007bff;">📸 이미지로 변환</button>
+            <button onclick="document.getElementById('slogan-modal').style.display='none'">닫기</button>
+            <div id="image-result" style="margin-top:20px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const stageInfo = [
+        {title: "물놀이 안전", time: "5분", url: "https://youtu.be/BMCP-2PBvCc"},
+        {title: "폭염 시 행동 요령", time: "4분", url: "https://youtu.be/0gu2fw06qdY"},
+        {title: "여름철 생활 안전", time: "6분", url: "https://youtu.be/P7uoFJDioJI"}
+    ];
+
+    const quizData = [
+        [
+            {q: "물놀이 전 준비운동은 필수?", a: true, type: 'ox'}, {q: "바닷가는 갑자기 깊어질 수 있다?", a: true, type: 'ox'}, {q: "물놀이 중 껌 씹기는 안전?", a: false, type: 'ox'}, 
+            {q: "가장 지루한 중학교는? (넌센스)", a: "로딩중", type: 'text'}, {q: "구명조끼는 반드시 착용?", a: true, type: 'ox'}, {q: "혼자 깊은 곳에 가도 된다?", a: false, type: 'ox'}, {q: "햇빛 강할 때 모자 필수?", a: true, type: 'ox'}, 
+            {q: "우유가 넘어지면? (넌센스)", a: "아야", type: 'text'}, {q: "준비운동은 손발부터?", a: true, type: 'ox'}, {q: "물에 빠진 친구를 보면 즉시 뛰어든다?", a: false, type: 'ox'}
+        ],
+        [
+            {q: "폭염주의보는 33도 이상?", a: true, type: 'ox'}, {q: "폭염 시 야외활동 자제?", a: true, type: 'ox'}, {q: "갈증 없어도 물 자주 마시기?", a: true, type: 'ox'}, 
+            {q: "아몬드가 죽으면? (넌센스)", a: "다이아몬드", type: 'text'}, {q: "실내외 온도차는 5도 내외가 좋다?", a: true, type: 'ox'}, {q: "폭염 시 정전 대비 손전등 준비?", a: true, type: 'ox'}, {q: "자동차 안에 혼자 남겨져도 된다?", a: false, type: 'ox'}, 
+            {q: "신이 버린 사람은? (넌센스)", a: "신발", type: 'text'}, {q: "폭염 시 날씨 확인 필수?", a: true, type: 'ox'}, {q: "더울 때 찬물 샤워가 숙면에 좋다?", a: false, type: 'ox'}
+        ],
+        [
+            {q: "자전거 탈 때 헬멧 필수?", a: true, type: 'ox'}, {q: "스마트폰 보며 걷기는 위험?", a: true, type: 'ox'}, {q: "젖은 손으로 전기기구 금지?", a: true, type: 'ox'}, 
+            {q: "세상에서 가장 뜨거운 과일? (넌센스)", a: "천도복숭아", type: 'text'}, {q: "모르는 사람이 도와달라 하면 따라간다?", a: false, type: 'ox'}, {q: "가스 냄새 시 창문 열고 알리기?", a: true, type: 'ox'}, {q: "모기 기피제 사용은 건강에 도움?", a: true, type: 'ox'}, 
+            {q: "왕이 넘어지면? (넌센스)", a: "킹콩", type: 'text'}, {q: "온라인에서 개인정보 공유 금지?", a: true, type: 'ox'}, {q: "사이버 예절 필수?", a: true, type: 'ox'}
+        ]
+    ];
+
+    function init() {
+        const container = document.getElementById('stages');
+        stageInfo.forEach((s, i) => {
+            container.innerHTML += `<div class="stage-box"><h3>${i+1}단계: ${s.title}</h3><p>⏳ 예상 시청 시간: ${s.time}</p><a href="${s.url}" target="_blank"><button style="background:#17a2b8;">📺 영상 보기</button></a><button onclick="startQuiz(${i})">퀴즈 시작</button></div>`;
+        });
+    }
+
+    function openSloganModal() { 
+        document.getElementById('slogan-modal').style.display='flex';
+        document.getElementById('slogan-input').value = "부주의한 순간방심 돌아오는 평생후회";
+        document.getElementById('slogan-display').innerText = "부주의한 순간방심 돌아오는 평생후회";
+    }
+
+    function startQuiz(idx, qIdx=0, score=0) {
+        document.getElementById('quiz-modal').style.display = 'flex';
+        if(qIdx < quizData[idx].length) {
+            let html = `<h2>${quizData[idx][qIdx].q}</h2>`;
+            if(quizData[idx][qIdx].type === 'ox') {
+                html += `<button onclick="checkAns(${idx}, ${qIdx}, ${score}, true)">O</button><button onclick="checkAns(${idx}, ${qIdx}, ${score}, false)">X</button>`;
+            } else {
+                html += `<input type="text" id="userAns"><br><button onclick="checkTextAns(${idx}, ${qIdx}, ${score})">제출</button>`;
+            }
+            document.getElementById('quiz-content').innerHTML = html;
+        } else {
+            document.getElementById('quiz-content').innerHTML = `<h2>최종 점수: ${score} / 10</h2><button onclick="document.getElementById('quiz-modal').style.display='none'">종료</button>`;
+        }
+    }
+
+    function checkAns(idx, qIdx, score, val) {
+        if(quizData[idx][qIdx].a === val) { confetti(); alert("정답! 🎉"); startQuiz(idx, qIdx + 1, score + 1); }
+        else { alert("틀렸어요! 😢"); startQuiz(idx, qIdx + 1, score); }
+    }
+
+    function checkTextAns(idx, qIdx, score) {
+        const userAns = document.getElementById('userAns').value;
+        if(userAns === quizData[idx][qIdx].a) { confetti(); alert("정답! 🎉"); startQuiz(idx, qIdx + 1, score + 1); }
+        else { alert("틀렸어요! 정답은 " + quizData[idx][qIdx].a + " 입니다."); startQuiz(idx, qIdx + 1, score); }
+    }
+
+    async function convertToImage() {
+        const element = document.getElementById('slogan-container');
+        const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: null });
+        const resultArea = document.getElementById('image-result');
+        resultArea.innerHTML = "<p>마우스 우클릭 후 '이미지를 다른 이름으로 저장' 하세요!</p>";
+        resultArea.appendChild(canvas);
+    }
+    
+    function setBg(url) { document.getElementById('slogan-container').style.backgroundImage = `url('${url}')`; document.getElementById('bg-select').style.display='none'; document.getElementById('write-area').style.display='block'; }
+    init();
+</script>
+</body>
+</html>
