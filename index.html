@@ -16,7 +16,13 @@
         #slogan-container { width: 600px; height: 400px; position: relative; margin: auto; background-size: cover; background-position: center; border: 1px solid #ccc; }
         .text-overlay { position: absolute; width: 90%; left: 5%; font-size: 35px; font-weight: bold; color: white; text-shadow: 3px 3px 6px black; white-space: pre-wrap; word-break: break-all; }
         input[type="text"] { padding: 10px; font-size: 18px; width: 80%; margin-bottom: 10px; }
- 
+        
+        #image-result {
+            position: fixed; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 20px; border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 1001;
+        }
     </style>
 </head>
 <body>
@@ -47,17 +53,15 @@
         </div>
         <div id="write-area" style="display:none;">
             <div id="slogan-container"><div id="slogan-display" class="text-overlay" style="top: 40%;"></div></div>
-<textarea id="slogan-input" oninput="document.getElementById('slogan-display').innerText=this.value" style="width:90%; height:80px; margin:20px 0; font-size:20px;"></textarea>
-
-<!-- 여기에 버튼을 넣으세요 -->
-<br>
-<button onclick="resetBackground()" style="background:#ffc107; color:black; margin-bottom:10px;">🖼️ 배경 다시 선택하기</button>
-<br>
+            <textarea id="slogan-input" oninput="document.getElementById('slogan-display').innerText=this.value" style="width:90%; height:80px; margin:20px 0; font-size:20px;"></textarea>
+            <br>
+            <button onclick="resetBackground()" style="background:#ffc107; color:black; margin-bottom:10px;">🖼️ 배경 다시 선택하기</button>
+            <br>
             <button onclick="document.getElementById('slogan-display').style.top='10%'">위</button>
             <button onclick="document.getElementById('slogan-display').style.top='40%'">중앙</button>
             <button onclick="document.getElementById('slogan-display').style.top='70%'">아래</button>
             <button onclick="convertToImage()" style="background:#007bff;">📸 이미지로 변환</button>
-           <button onclick="closeSloganModal()">닫기</button>
+            <button onclick="closeSloganModal()">닫기</button>
             <div id="image-result" style="margin-top:20px;"></div>
         </div>
     </div>
@@ -95,7 +99,6 @@
         });
     }
 
-    // 여기에 넣으시면 됩니다!
     function resetBackground() {
         document.getElementById('bg-select').style.display = 'block';
         document.getElementById('write-area').style.display = 'none';
@@ -103,14 +106,10 @@
 
     function openSloganModal() { 
         document.getElementById('slogan-modal').style.display='flex';
-        
-        // --- 추가된 부분 ---
-        document.getElementById('bg-select').style.display = 'block'; // 배경 선택 화면 보임
-        document.getElementById('write-area').style.display = 'none'; // 작성 화면 숨김
-        // ------------------
-        
+        document.getElementById('bg-select').style.display = 'block';
+        document.getElementById('write-area').style.display = 'none';
         document.getElementById('slogan-input').value = "부주의한 순간방심\n돌아오는 평생후회";
-document.getElementById('slogan-display').innerText = "부주의한 순간방심\n돌아오는 평생후회";
+        document.getElementById('slogan-display').innerText = "부주의한 순간방심\n돌아오는 평생후회";
     }
 
     function startQuiz(idx, qIdx=0, score=0) {
@@ -133,21 +132,15 @@ document.getElementById('slogan-display').innerText = "부주의한 순간방심
         else { alert("틀렸어요! 😢"); startQuiz(idx, qIdx + 1, score); }
     }
 
-function closeSloganModal() {
-        // 1. 모달창 닫기
+    function closeSloganModal() {
         document.getElementById('slogan-modal').style.display = 'none';
-        
-        // 2. 이미지 변환 결과물 지우기
         document.getElementById('image-result').innerHTML = '';
-        
-        // 3. 내용도 깨끗이 지우기 (초기화)
         document.getElementById('slogan-input').value = "";
         document.getElementById('slogan-display').innerText = "";
-        
-        // 4. 배경 선택 화면으로 원상복구 (다음번에 열 때 다시 배경부터 고르게 함)
         document.getElementById('bg-select').style.display = 'block';
         document.getElementById('write-area').style.display = 'none';
     }
+
     function checkTextAns(idx, qIdx, score) {
         const userAns = document.getElementById('userAns').value;
         if(userAns === quizData[idx][qIdx].a) { confetti(); alert("정답! 🎉"); startQuiz(idx, qIdx + 1, score + 1); }
@@ -157,21 +150,22 @@ function closeSloganModal() {
     async function convertToImage() {
         const element = document.getElementById('slogan-container');
         const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: null });
+        canvas.style.width = "400px";
+        canvas.style.display = "block";
         const resultArea = document.getElementById('image-result');
-        resultArea.innerHTML = "<p>마우스 우클릭 후 '이미지를 다른 이름으로 저장' 하세요!</p>";
+        resultArea.innerHTML = "<p>마우스 우클릭 후 저장하세요! <button onclick='document.getElementById(\"image-result\").innerHTML=\"\"'>닫기</button></p>";
         resultArea.appendChild(canvas);
     }
     
     function setBg(url) {
-    document.getElementById('slogan-container').style.backgroundImage = `url('${url}')`;
-    document.getElementById('bg-select').style.display = 'none';
-    document.getElementById('write-area').style.display = 'block';
-
-    // 배경을 선택할 때마다 문구를 초기값으로 설정
-    const defaultText = "부주의한 순간방심\n돌아오는 평생후회";
-    document.getElementById('slogan-input').value = defaultText;
-    document.getElementById('slogan-display').innerText = defaultText;
-}
+        document.getElementById('slogan-container').style.backgroundImage = `url('${url}')`;
+        document.getElementById('bg-select').style.display = 'none';
+        document.getElementById('write-area').style.display = 'block';
+        const defaultText = "부주의한 순간방심\n돌아오는 평생후회";
+        document.getElementById('slogan-input').value = defaultText;
+        document.getElementById('slogan-display').innerText = defaultText;
+    }
+    init();
 </script>
 </body>
 </html>
