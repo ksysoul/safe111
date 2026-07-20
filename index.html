@@ -46,8 +46,12 @@
         </div>
         <div id="write-area" style="display:none;">
             <div id="slogan-container"><div id="slogan-display" class="text-overlay" style="top: 40%;"></div></div>
-            <textarea id="slogan-input" oninput="document.getElementById('slogan-display').innerText=this.value" style="width:90%; height:80px; margin:20px 0; font-size:18px;"></textarea>
-            <br>
+<textarea id="slogan-input" oninput="document.getElementById('slogan-display').innerText=this.value" style="width:90%; height:80px; margin:20px 0; font-size:18px;"></textarea>
+
+<!-- 여기에 버튼을 넣으세요 -->
+<br>
+<button onclick="resetBackground()" style="background:#ffc107; color:black; margin-bottom:10px;">🖼️ 배경 다시 선택하기</button>
+<br>
             <button onclick="document.getElementById('slogan-display').style.top='10%'">위</button>
             <button onclick="document.getElementById('slogan-display').style.top='40%'">중앙</button>
             <button onclick="document.getElementById('slogan-display').style.top='70%'">아래</button>
@@ -88,6 +92,12 @@
         stageInfo.forEach((s, i) => {
             container.innerHTML += `<div class="stage-box"><h3>${i+1}단계: ${s.title}</h3><p>⏳ 예상 시청 시간: ${s.time}</p><a href="${s.url}" target="_blank"><button style="background:#17a2b8;">📺 영상 보기</button></a><button onclick="startQuiz(${i})">퀴즈 시작</button></div>`;
         });
+    }
+
+    // 여기에 넣으시면 됩니다!
+    function resetBackground() {
+        document.getElementById('bg-select').style.display = 'block';
+        document.getElementById('write-area').style.display = 'none';
     }
 
     function openSloganModal() { 
