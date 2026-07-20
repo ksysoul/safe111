@@ -56,7 +56,7 @@
             <button onclick="document.getElementById('slogan-display').style.top='40%'">중앙</button>
             <button onclick="document.getElementById('slogan-display').style.top='70%'">아래</button>
             <button onclick="convertToImage()" style="background:#007bff;">📸 이미지로 변환</button>
-            <button onclick="document.getElementById('slogan-modal').style.display='none'">닫기</button>
+           <button onclick="closeSloganModal()">닫기</button>
             <div id="image-result" style="margin-top:20px;"></div>
         </div>
     </div>
@@ -131,6 +131,18 @@ document.getElementById('slogan-display').innerText = "부주의한 순간방심
         if(quizData[idx][qIdx].a === val) { confetti(); alert("정답! 🎉"); startQuiz(idx, qIdx + 1, score + 1); }
         else { alert("틀렸어요! 😢"); startQuiz(idx, qIdx + 1, score); }
     }
+
+function closeSloganModal() {
+    // 1. 모달창 닫기
+    document.getElementById('slogan-modal').style.display = 'none';
+    
+    // 2. 이미지 변환 결과물 지우기
+    document.getElementById('image-result').innerHTML = '';
+    
+    // 3. 배경 선택 화면으로 원상복구 (다음번에 열 때 다시 배경부터 고르게 함)
+    document.getElementById('bg-select').style.display = 'block';
+    document.getElementById('write-area').style.display = 'none';
+}
 
     function checkTextAns(idx, qIdx, score) {
         const userAns = document.getElementById('userAns').value;
