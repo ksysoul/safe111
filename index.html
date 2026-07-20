@@ -102,6 +102,12 @@
 
     function openSloganModal() { 
         document.getElementById('slogan-modal').style.display='flex';
+        
+        // --- 추가된 부분 ---
+        document.getElementById('bg-select').style.display = 'block'; // 배경 선택 화면 보임
+        document.getElementById('write-area').style.display = 'none'; // 작성 화면 숨김
+        // ------------------
+        
         document.getElementById('slogan-input').value = "부주의한 순간방심 돌아오는 평생후회";
         document.getElementById('slogan-display').innerText = "부주의한 순간방심 돌아오는 평생후회";
     }
