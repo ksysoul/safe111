@@ -157,8 +157,6 @@ function closeSloganModal() {
     async function convertToImage() {
         const element = document.getElementById('slogan-container');
         const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: null });
-        canvas.style.width = "400px"; // 결과물이 너무 크지 않게 적절한 크기로 고정
-        canvas.style.display = "block";
         const resultArea = document.getElementById('image-result');
         resultArea.innerHTML = "<p>마우스 우클릭 후 '이미지를 다른 이름으로 저장' 하세요!</p>";
         resultArea.appendChild(canvas);
